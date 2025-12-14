@@ -1,47 +1,47 @@
 # CodeCraftHub – User Management Service
 
-Node.js/Express Service für Benutzerregistrierung und -anmeldung mit MongoDB, JWT‑Authentifizierung und getesteter Service-/Controller‑Logik.
+Node.js/Express service for user registration and login with MongoDB, JWT authentication, and tested service/controller logic.
 
 ## Features
-- Registrierung mit Validierung (Pflichtfelder, minimale Passwortlänge)
-- Login mit JWT‑Token (1 Stunde Gültigkeit)
-- Rollen im User‑Model (`student`, `instructor`, `admin`)
-- Zentrale Config für Umgebungsvariablen
-- Globales Error‑Handling und Logging (Winston)
-- Unit‑Tests für Service‑ und Controller‑Schicht (Jest)
+- Registration with validation (required fields, minimum password length)
+- Login with JWT tokens (1 hour expiry)
+- Roles in the user model (`student`, `instructor`, `admin`)
+- Centralized configuration for environment variables
+- Global error handling and logging (Winston)
+- Unit tests for service and controller layers (Jest)
 
-## Projektstruktur
+## Project Structure
 
 ```text
 src/
-	app.js                # Einstiegspunkt, startet Server nach DB‑Verbindung
+	app.js                # Entry point; starts server after DB connection
 	config/
-		env.js              # Lädt/validiert .env und exportiert Config
-		db.js               # Stellt MongoDB‑Verbindung via Mongoose her
-		server.js           # Erstellt konfiguriertes Express‑App‑Objekt
+		env.js              # Loads/validates .env and exports config
+		db.js               # Establishes MongoDB connection via Mongoose
+		server.js           # Creates configured Express app instance
 	controllers/
-		userController.js   # HTTP‑Handler für /register und /login
+		userController.js   # HTTP handlers for /register and /login
 	middleware/
-		authMiddleware.js   # JWT‑Auth‑Middleware (Authorization: Bearer <token>)
+		authMiddleware.js   # JWT auth middleware (Authorization: Bearer <token>)
 	models/
-		userModel.js        # Mongoose‑Schema/Model für Benutzer
+		userModel.js        # Mongoose schema/model for users
 	routes/
-		userRoutes.js       # Routen für /api/users/register und /api/users/login
+		userRoutes.js       # Routes for /api/users/register and /api/users/login
 	services/
-		userService.js      # Datenzugriff & Businesslogik rund um User
+		userService.js      # Data access & business logic around users
 	utils/
-		errorHandler.js     # Globaler Error‑Handler für Express
-		logger.js           # Winston‑Logger (Konsole + error.log)
+		errorHandler.js     # Global error handler for Express
+		logger.js           # Winston logger (console + error.log)
 tests/
 	userController.test.js
 	userService.test.js
 ```
 
-## Voraussetzungen
+## Prerequisites
 
-- Node.js (empfohlen: ≥ 18)
+- Node.js (recommended: ≥ 18)
 - npm
-- Laufende MongoDB‑Instanz (lokal oder remote)
+- Running MongoDB instance (local or remote)
 
 ## Installation
 
@@ -50,71 +50,71 @@ cd "./CodeCraftHub"
 npm install
 ```
 
-## Konfiguration (.env)
+## Configuration (.env)
 
-Lege im Projektroot eine Datei `.env` an:
+Create a `.env` file in the project root:
 
 ```bash
 MONGO_URI=mongodb://localhost:27017/codecrafthub
-JWT_SECRET=einsichereslangessecret
+JWT_SECRET=averysecurelongsecret
 PORT=5000
 ```
 
-`src/config/env.js` stellt sicher, dass `MONGO_URI` und `JWT_SECRET` gesetzt sind – sonst bricht der Start mit einem Fehler ab.
+`src/config/env.js` ensures that `MONGO_URI` and `JWT_SECRET` are set – otherwise the app will fail fast on startup.
 
-## Starten der Anwendung
+## Running the Application
 
-Entwicklungsmodus mit automatischem Neustart (falls `nodemon` installiert ist, wird über `npm install` als Dev‑Dependency geholt):
+Development mode with automatic restart (via `nodemon`, installed as a dev dependency):
 
 ```bash
 npm run dev
 ```
 
-Produktionsnah (ohne Watcher):
+Production-like (no file watching):
 
 ```bash
 npm start
 ```
 
-Die API läuft dann standardmäßig auf `http://localhost:5000` (oder dem in `PORT` gesetzten Wert).
+The API will be available at `http://localhost:5000` (or the value of `PORT`).
 
-## API‑Endpunkte
+## API Endpoints
 
-Basis‑Pfad: `http://localhost:<PORT>/api/users`
+Base path: `http://localhost:<PORT>/api/users`
 
 ### POST /api/users/register
 
-Registriert einen neuen Benutzer.
+Registers a new user.
 
-**Request‑Body (JSON):**
+**Request body (JSON):**
 
 ```json
 {
 	"username": "alice",
 	"email": "alice@example.com",
-	"password": "geheimespasswort"
+	"password": "secretpassword"
 }
 ```
 
-**Antworten (Beispiele):**
+**Responses (examples):**
 - `201 Created` – `{ "message": "User registered successfully." }`
-- `400 Bad Request` – fehlende Felder oder zu kurzes Passwort
-- `409 Conflict` – Username oder E‑Mail ist bereits vergeben
+- `400 Bad Request` – missing fields or password too short
+- `409 Conflict` – username or email is already in use
 
 ### POST /api/users/login
 
-Authentifiziert einen Benutzer und gibt ein JWT zurück.
+Authenticates a user and returns a JWT.
 
-**Request‑Body (JSON):**
+**Request body (JSON):**
 
 ```json
 {
 	"email": "alice@example.com",
-	"password": "geheimespasswort"
+	"password": "secretpassword"
 }
 ```
 
-**Erfolgsantwort:**
+**Success response:**
 
 ```json
 {
@@ -122,43 +122,44 @@ Authentifiziert einen Benutzer und gibt ein JWT zurück.
 }
 ```
 
-**Fehlerantworten (Beispiele):**
-- `400 Bad Request` – E‑Mail oder Passwort fehlt
-- `401 Unauthorized` – ungültige Zugangsdaten
 
-### Geschützte Routen (Beispiel)
+**Error responses (examples):**
+- `400 Bad Request` – email or password is missing
+- `401 Unauthorized` – invalid credentials
 
-Für spätere, geschützte Endpunkte kannst du `authMiddleware` nutzen. Der Client muss dabei den Header setzen:
+### Protected Routes (example)
+
+For future protected endpoints you can use `authMiddleware`. The client has to send the header:
 
 ```http
 Authorization: Bearer <jwt-token>
 ```
 
-`authMiddleware` prüft das Token und hängt den decodierten Payload an `req.user`.
+`authMiddleware` validates the token and attaches the decoded payload to `req.user`.
 
-## Fehlerbehandlung & Logging
+## Error Handling & Logging
 
-- `errorHandler` fängt alle über `next(error)` weitergegebenen Fehler ab.
-- Wenn `error.statusCode` und `error.isOperational` gesetzt sind, wird dieser HTTP‑Status und die Message ausgegeben.
-- Andernfalls erhält der Client eine generische `500`‑Antwort.
-- Alle Fehler werden über `logger` (Winston) geloggt und z.B. in `error.log` geschrieben.
+- `errorHandler` catches all errors passed via `next(error)`.
+- If `error.statusCode` and `error.isOperational` are set, that HTTP status and message are returned.
+- Otherwise, the client receives a generic `500` response.
+- All errors are logged via `logger` (Winston) and written e.g. to `error.log`.
 
 ## Tests
 
-Es kommen Jest und Supertest‑ähnliche Patterns für Unit‑Tests zum Einsatz (aktuell ohne echte HTTP‑Integrationstests):
+Jest is used for unit tests (currently without full HTTP integration tests):
 
 ```bash
 npm test
 ```
 
-Aktuelle Tests:
-- `tests/userService.test.js` – testet `userService` mit gemocktem `User`‑Model
-- `tests/userController.test.js` – testet `registerUser` und `loginUser` mit gemocktem `userService`, `bcrypt`, `jsonwebtoken`
+Current tests:
+- `tests/userService.test.js` – tests `userService` with a mocked `User` model
+- `tests/userController.test.js` – tests `registerUser` and `loginUser` with mocked `userService`, `bcrypt`, `jsonwebtoken`
 
-## Weiterentwicklung
+## Further Development
 
-Mögliche nächste Schritte:
-- Weitere User‑Routen: Profil, Passwort‑Reset, Rollenverwaltung
-- Integrationstests mit `supertest` für komplette HTTP‑Flows
-- CORS‑Konfiguration einschränken (nur bestimmte Frontend‑Origins zulassen)
-- Deployment‑Konfiguration (z.B. Dockerfile, CI‑Pipeline)
+Possible next steps:
+- Additional user routes: profile, password reset, role management
+- Integration tests with `supertest` for full HTTP flows
+- Restrict CORS configuration (only allow specific frontend origins)
+- Deployment setup (e.g. Dockerfile, CI pipeline)
