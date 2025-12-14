@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 const config = require('./env');
 
+/**
+ * Establishes a connection to MongoDB using Mongoose.
+ * Exits the Node.js process if the connection cannot be established.
+ */
 const connectDB = async () => {
     try {
         await mongoose.connect(config.mongoUri);

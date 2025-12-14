@@ -1,6 +1,15 @@
 const jwt = require('jsonwebtoken');
 const config = require('../config/env');
 
+/**
+ * Express middleware that protects routes by validating a Bearer JWT.
+ *
+ * Expects an Authorization header in the form:
+ *   Authorization: Bearer <token>
+ *
+ * On success, attaches the decoded token to `req.user` and calls `next()`.
+ * On failure, responds with HTTP 401.
+ */
 const authMiddleware = (req, res, next) => {
     const authHeader = req.header('Authorization');
 

@@ -1,3 +1,4 @@
+// Application entry point: initializes Express, connects to MongoDB and starts the HTTP server.
 const express = require('express');
 const connectDB = require('./config/db');
 const initServer = require('./config/server');
@@ -7,9 +8,12 @@ const config = require('./config/env');
 
 const app = initServer();
 
+// Immediately-invoked async function to ensure the database is connected
+// before the server starts accepting incoming requests.
 (async () => {
 	await connectDB();
 
+	// Mount user-related routes and global error handler.
 	app.use('/api/users', userRoutes);
 	app.use(errorHandler);
 

@@ -4,7 +4,12 @@ const config = require('../config/env');
 const userService = require('../services/userService');
 
 
-// Register a new user
+/**
+ * Handles HTTP POST /register requests.
+ *
+ * Validates incoming data, checks for duplicate username/email,
+ * hashes the password and creates a new user via the service layer.
+ */
 async function registerUser(req, res, next) {
     const { username, email, password } = req.body;
 
@@ -42,7 +47,12 @@ async function registerUser(req, res, next) {
     }
 };
 
-// Login user
+/**
+ * Handles HTTP POST /login requests.
+ *
+ * Verifies user credentials and returns a signed JWT token
+ * when authentication succeeds.
+ */
 async function loginUser(req, res, next) {
     const { email, password } = req.body;
 

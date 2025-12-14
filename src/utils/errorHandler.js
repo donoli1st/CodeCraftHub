@@ -1,5 +1,12 @@
 const logger = require('./logger');
 
+/**
+ * Global Express error-handling middleware.
+ *
+ * Logs the full error and sends a safe JSON response to the client.
+ * If `err.statusCode` and `err.isOperational` are set, those values
+ * are respected to return more specific HTTP status codes and messages.
+ */
 const errorHandler = (err, req, res, next) => {
     logger.error(err);
 
