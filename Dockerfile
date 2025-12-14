@@ -10,7 +10,8 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install all dependencies (including dev; adjust to --only=production for prod-only image)
-RUN npm install --omit=dev
+RUN npm install
+#--omit=dev
 
 # 2) Runtime image
 FROM node:20-alpine AS runtime
